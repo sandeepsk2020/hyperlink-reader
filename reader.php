@@ -19,13 +19,51 @@ if(count($error)>0){
     die(implode(PHP_EOL,$error).PHP_EOL);
 }
 
+//get html content
+$htmlContent = file_get_contents($url);
+
+//parse html
+$pageDom = new DomDocument();   
+@$pageDom->loadHTML(mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8'));
+
+
+//search the ancher tag
+$tagName = 'a';
+$links = searchByTagName($pageDom,$tagName,$searchKey);
+
+
+//dispaly the link
+if(count($links)>0){
+    echo 'URL : '.$links[0].PHP_EOL;
+}else{
+    echo 'No result Found'.PHP_EOL;
+}
 
 
 
+/**
+ * search the html content with searchKey for a perticular tagName
+ * returns array of text for that tag
+ */
+function searchByTagName($content,$tagName,$searchKey){
 
+    $domObjectList = $content->getElementsByTagName($tagName);
+    $textContentList = [];
 
+    foreach ($domObjectList as $domObject) {
+        if($domObject->nodeValue == $searchKey){
 
+            $textContentList[] = $domObject->getAttribute('href');
+        }
+    }
 
+    return $textContentList;
+}
+
+/**
+ * validate the input
+ * return array of error msg
+ */
 function validateParameters($url, $searchKey){
     $error=[];
     if(filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
