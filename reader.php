@@ -51,7 +51,7 @@ function searchByTagName($content,$tagName,$searchKey){
     $textContentList = [];
 
     foreach ($domObjectList as $domObject) {
-        if($domObject->nodeValue == $searchKey){
+        if(trim(strip_tags($domObject->nodeValue)) == $searchKey){
 
             $textContentList[] = $domObject->getAttribute('href');
         }
